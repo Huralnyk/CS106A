@@ -1,23 +1,26 @@
 /*
  * File: CollectNewspaperKarel.java
+ * Author: Alexey Huralnyk
  * --------------------------------
- * At present, the CollectNewspaperKarel subclass does nothing.
- * Your job in the assignment is to add the necessary code to
- * instruct Karel to walk to the door of its house, pick up the
- * newspaper (represented by a beeper, of course), and then return
- * to its initial position in the upper left corner of the house.
+ * Karel starts off in the northwest corner of its house as shown
+ * in the diagram in the Assignment #1 of the Stanford CS106A course.
+ * At the end of running program Karel collects the newspaper 
+ * represented by a beeper from outside the doorway and then  
+ * returns to its initial position.
  */
 
 import stanford.karel.*;
 
 public class CollectNewspaperKarel extends Karel {
 	
+	/* Goes pick up newspaper and returns to home */
 	public void run() {
 		walkToTheDoor();
 		pickUpNewspaper();
 		returnHome();
 	}
 	
+	/* Goes to outside the home right in front of the door */
 	private void walkToTheDoor() {
 		moveToWall();
 		turnRight();
@@ -26,12 +29,14 @@ public class CollectNewspaperKarel extends Karel {
 		move();
 	}
 	
+	/* Picks up newspaper represented by a beeper */
 	private void pickUpNewspaper() {
 		if (beepersPresent()) {
 			pickBeeper();
 		}
 	}
 	
+	/* Goes back to its initial position */
 	private void returnHome() {
 		turnAround();
 		moveToWall();
@@ -40,19 +45,21 @@ public class CollectNewspaperKarel extends Karel {
 		turnRight();
 	}
 	
+	/* Turns Karel 90 degrees to the right */
 	private void turnRight() {
 		turnLeft();
 		turnLeft();
 		turnLeft();
 	}
 	
+	/* Turns Karel around 180 degrees */
 	private void turnAround() {
 		turnLeft();
 		turnLeft();
 	}
 
 	/*
-	 * Moves to the nearest wall.
+	 * Moves Karel to the nearest wall.
 	 * Pre-condition:	none
 	 * Post-condition:	Facing first wall in whichever direction
 	 * Karel was facing previously 

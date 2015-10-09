@@ -4,7 +4,7 @@
  * ----------------------------
  * Karel draws a checkerboard using beepers. Solution based on pattern using
  * in CleanupKarel program providing in Handout #9 "Example Karel Problems"
- * by Mehran Sahami as part of cs109a course handouts.
+ * by Mehran Sahami as part of CS106A course handouts.
  */
 
 import stanford.karel.*;

@@ -6,7 +6,7 @@
  * with an infinite number of beepers in Karel’s beeper bag.
  * At the end of running program Karel repairs all the arches
  * on the every fourth corner which are represented with column
- * of beepers as described in Assignment #4 of Standford's 
+ * of beepers as described in Assignment #4 of Stanford 
  * CS106A course. 
  */
 
