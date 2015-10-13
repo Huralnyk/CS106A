@@ -25,20 +25,22 @@ public class Pyramid extends GraphicsProgram {
 	
 	/* Runs the program */
 	public void run() {
-		/* Calculate x and y coordinate of the first brick in the base */
-		int xOffset = (getWidth()  - BRICK_WIDTH * BRICKS_IN_BASE) / 2;
-		int yOffset = getHeight() - BRICK_HEIGHT;
-		int bricksInRow = BRICKS_IN_BASE;
 		for (int i = 0; i < BRICKS_IN_BASE; i++) {
-			for (int j = 0; j < bricksInRow; j++) {
-				int x = j * BRICK_WIDTH + xOffset;
-				int y = yOffset;
-				GRect brick = new GRect(x, y, BRICK_WIDTH, BRICK_HEIGHT);
-				add(brick);
-			}
-			xOffset += BRICK_WIDTH / 2;
-			yOffset -= BRICK_HEIGHT;
-			bricksInRow--;
+			double y = (getHeight() - BRICK_HEIGHT) - i * BRICK_HEIGHT;
+			drawRow(y, BRICKS_IN_BASE - i);
+		}
+	}
+	
+	/* 
+	 * Draws a row of bricks centered on the graphics window with
+	 * specified number of bricks and top position by parameters
+	 * y and numBricks respectively.
+	 */
+	private void drawRow(double y, int numBricks) {
+		double width = BRICK_WIDTH * numBricks;
+		double x = (getWidth() - width) / 2;
+		for (int i = 0; i < numBricks; i++) {
+			add(new GRect((x + i * BRICK_WIDTH), y, BRICK_WIDTH, BRICK_HEIGHT));
 		}
 	}
 }

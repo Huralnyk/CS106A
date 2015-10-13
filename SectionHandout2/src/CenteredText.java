@@ -24,7 +24,7 @@ public class CenteredText extends GraphicsProgram {
 		GLabel label = new GLabel(text);
 		label.setFont(font);
 		double x = (getWidth() - label.getWidth()) / 2;
-		double y = (getHeight() - label.getAscent()) / 2;
+		double y = (getHeight() + label.getAscent()) / 2;
 		label.setLocation(x, y);
 		return label;
 	}

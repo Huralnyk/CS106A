@@ -30,29 +30,20 @@ public class CS106ATiles extends GraphicsProgram {
 	/* Runs the program */
 	public void run() {
 		/* Calculate x and y coordinate of the entire tile grid */
-		double width = NCOLUMNS * TILE_WIDTH + (NCOLUMNS - 1) * TILE_SPACE;
-		double height = NROWS * TILE_HEIGHT + (NROWS - 1) * TILE_SPACE;
-		double x = (getWidth() - width) / 2;
-		double y = (getHeight() - height) / 2;
-		drawGrid(x, y);
-	}
-	
-	/*
-	 * Draws a tile grid with top left at (x, y)
-	 */
-	private void drawGrid(double x, double y) {
+		int xOffset = (getWidth() - TILE_WIDTH * NCOLUMNS - (NCOLUMNS - 1) * TILE_SPACE) / 2;
+		int yOffset = (getHeight() - TILE_HEIGHT * NROWS - (NROWS - 1) * TILE_SPACE) / 2;
 		for (int i = 0; i < NROWS; i++) {
 			for (int j = 0; j < NCOLUMNS; j++) {
-				double gx = x + j * (TILE_WIDTH + TILE_SPACE);
-				double gy = y + i * (TILE_HEIGHT + TILE_SPACE);
-				drawTile(gx, gy, "CS106A");
+				double x = j * (TILE_WIDTH + TILE_SPACE) + xOffset;
+				double y = i * (TILE_HEIGHT + TILE_SPACE) + yOffset;
+				drawTile(x, y, "CS106A");
 			}
 		}
 	}
 	
 	/* 
-	 * Draws a tile containing specified text in the center
-	 * and puts its top left at (x,y).
+	 * Draws a tile containing specified text in the center and
+	 * puts its upper left corner to specified x and y coordinate.
 	 */
 	private void drawTile(double x, double y, String text) {
 		GRect rect = new GRect(x, y, TILE_WIDTH, TILE_HEIGHT);
