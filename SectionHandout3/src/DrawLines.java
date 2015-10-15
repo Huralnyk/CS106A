@@ -14,15 +14,24 @@ import java.awt.event.*;
 
 public class DrawLines extends GraphicsProgram {
 	
+	/**
+	 * Initializes the mouse listeners.
+	 */
 	public void init() {
 		addMouseListeners();
 	}
 	
+	/**
+	 * Called whenever the mouse button is pressed.
+	 */
 	public void mousePressed(MouseEvent e) {
 		line = new GLine(e.getX(), e.getY(), e.getX(), e.getY());
 		add(line);
 	}
 	
+	/**
+	 * Called whenever the mouse is moved with button down.
+	 */
 	public void mouseDragged(MouseEvent e) {
 		line.setEndPoint(e.getX(), e.getY());
 	}

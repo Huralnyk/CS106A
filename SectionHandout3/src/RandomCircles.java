@@ -39,11 +39,11 @@ public class RandomCircles extends GraphicsProgram {
 	
 	/**
 	 * Creates new filled circle which is actually GOval object.
-	 * @param x X coordinate of a circle
-	 * @param y Y coordinate of a circle
-	 * @param r Radius of a circle
-	 * @param c Color of a circle
-	 * @return Filled circled which is GOval object.
+	 * @param x The x-coordinate of the center of the circle
+	 * @param y The y-coordinate of the center of the circle
+	 * @param r The radius of the circle in pixels
+	 * @param c The color of the circle
+	 * @return Filled circle which is GOval object
 	 */
 	private GOval createFilledCircle(int x, int y, int r, Color c) {
 		GOval circle = new GOval(x - r, y - r, r * 2, r * 2);
