@@ -21,11 +21,11 @@ public class Breakout extends GraphicsProgram {
   * these may NOT actually be the dimensions of the graphics canvas. */
 	public static final int APPLICATION_WIDTH = 400;
 	public static final int APPLICATION_HEIGHT = 600;
-
-/** Dimensions of game board.  On some platforms these may NOT actually
-  * be the dimensions of the graphics canvas. */
-	private static final int WIDTH = APPLICATION_WIDTH;
-	private static final int HEIGHT = APPLICATION_HEIGHT;
+	
+/** Dimensions of game board. On some platforms these may NOT actually
+ *  be the dimensions of the graphics canvas. */
+	public static final int WIDTH = APPLICATION_WIDTH;
+	public static final int HEIGHT = APPLICATION_HEIGHT;
 
 /** Dimensions of the paddle */
 	private static final int PADDLE_WIDTH = 60;
@@ -47,7 +47,7 @@ public class Breakout extends GraphicsProgram {
 	private static final int BRICK_WIDTH =
 	  (WIDTH - (NBRICKS_PER_ROW - 1) * BRICK_SEP) / NBRICKS_PER_ROW;	  
 
-/** Width of a row of bricks */
+/** Width of a one row of bricks */
 	private static final int ROW_WIDTH = 
 	  (NBRICKS_PER_ROW - 1) * BRICK_SEP + NBRICKS_PER_ROW * BRICK_WIDTH;
 	
@@ -69,18 +69,21 @@ public class Breakout extends GraphicsProgram {
 /** Starting Y velocity*/
 	private static final int Y_VEL = 3;
 
-/* Method: run() */
-	
+
+	/** Initializes mouse listeners to get mouse events */
 	public void init() {
 		addMouseListeners();
 	}
-/** Runs the Breakout program. */
+	
+	/** Runs the Breakout program. */
 	public void run() {
 		setup();
 		while (!gameIsOver()) {
 			dropBall();
 			moveBall();
-			checkForCollision();
+			if (ball != null) {
+				checkForCollision();
+			}
 			pause(DELAY);
 		}
 		presentFeedback();
@@ -106,7 +109,7 @@ public class Breakout extends GraphicsProgram {
 	 */
 	private void dropBall() {
 		if (ball == null) {
-			ball = createFilledCircle(getWidth() / 2, getHeight() / 2, BALL_RADIUS);
+			ball = createFilledCircle(getWidth() / 2, HEIGHT / 2, BALL_RADIUS);
 			add(ball);
 			vx = rgen.nextDouble(1.0, 3.0);
 			vy = Y_VEL;
@@ -116,10 +119,25 @@ public class Breakout extends GraphicsProgram {
 	}
 	
 	/** 
-	 * Moves the ball on the screen.
+	 * Moves the ball on the screen and checks it on
+	 * collision with bounds of the screen.
 	 */
 	private void moveBall() {
 		ball.move(vx, vy);
+		double x = ball.getX();
+		double y = ball.getY();
+		if (x < 0 || x > getWidth() - 2 * BALL_RADIUS) {
+			vx = -vx;
+		}
+		if (y < 0) {
+			vy = -vy;
+		} else if (y > getHeight() - 2 * BALL_RADIUS) {
+			// Ball is outside the bottom edge it means
+			// user wasted one ball, so start new turn.
+			remove(ball);
+			ball = null;
+			turn++;
+		}
 	}
 	
 	/** 
@@ -127,22 +145,38 @@ public class Breakout extends GraphicsProgram {
 	 */
 	private void checkForCollision() {
 		GObject collider = getCollidingObject();
-		if (collider == null) {
-			checkForCollisionWithBounds();
-		} else {
-			vy = -vy;
+		if (collider != null) {
 			bounceClip.play();
 			if (collider != paddle) {
+				vy = -vy;
 				remove(collider);
 				nBricksRemaining--;
+			} else {
+				hitPaddle();
 			}
 		}
 	}
 	
 	/**
-	 * Gets graphical object which is collides with ball.
+	 * Adjust ball bouncing depending on which edge of the
+	 * paddle was hit and direction ball was coming.
+	 */
+	private void hitPaddle() {
+		double x = ball.getX();
+		double y = ball.getY();
+		// Bounce from paddle only when ball hit
+		// top edge of paddle
+		if (getElementAt(x, y) == null && 
+			getElementAt(x + 2 * BALL_RADIUS, y) == null) {
+			vy = -vy;
+		}
+		
+	}
+	
+	/**
+	 * Gets graphical object which is ball collided with.
 	 * If there is no one return null.
-	 * @return GObject which is collided with ball.
+	 * @return GObject which is ball collided with.
 	 */
 	private GObject getCollidingObject() {
 		double x = ball.getX();
@@ -160,24 +194,6 @@ public class Breakout extends GraphicsProgram {
 			return getElementAt(x + 2 * BALL_RADIUS, y + 2 * BALL_RADIUS);
 		}
 		return null;
-	}
-	
-	/** 
-	 * Checks for collision with walls
-	 */
-	private void checkForCollisionWithBounds() {
-		double x = ball.getX();
-		double y = ball.getY();
-		if (x < 0 || x > getWidth() - 2 * BALL_RADIUS) {
-			vx = -vx;
-		}
-		if (y < 0) {
-			vy = -vy;
-		} else if (y > getHeight() - 2 * BALL_RADIUS) {
-			remove(ball);
-			ball = null;
-			turn++;
-		}
 	}
 	
 	/**
@@ -207,7 +223,7 @@ public class Breakout extends GraphicsProgram {
 	 * @param c	The color of the row
 	 */
 	private void drawRow(int y, Color c) {
-		int dx = (WIDTH - ROW_WIDTH) / 2;
+		int dx = (getWidth() - ROW_WIDTH) / 2;
 		for (int i = 0; i < NBRICKS_PER_ROW; i++) {
 			int x = dx + i * (BRICK_WIDTH + BRICK_SEP);
 			add(createFilledRect(x, y, BRICK_WIDTH, BRICK_HEIGHT, c));
@@ -271,6 +287,7 @@ public class Breakout extends GraphicsProgram {
 		lastX = e.getX();
 	}
 	
+	/** Present result of the game to user */
 	private void presentFeedback() {
 		boolean isWon = nBricksRemaining == 0;
 		String feedback = isWon ? "You win" : "You loose";
@@ -289,12 +306,13 @@ public class Breakout extends GraphicsProgram {
 	}
 
 	/** Private instance variables */
-	GRect paddle;
-	GOval ball;
+	
 	RandomGenerator rgen = RandomGenerator.getInstance();
 	AudioClip bounceClip = MediaTools.loadAudioClip("bounce.au");
-	private double vx, vy; // Velocities of the ball.
-	int lastX = 0;
-	int turn = 0;
-	int nBricksRemaining = 0;
+	GRect paddle;				// GRect representing the paddle
+	GOval ball;					// GOval representing the ball
+	private double vx, vy; 		// Velocities of the ball
+	int lastX = 0;				// Last horizontal position of mouse
+	int turn = 0;				// Current turn user playing
+	int nBricksRemaining = 0;	// Number of bricks remaining
 }
