@@ -68,7 +68,11 @@ public class Breakout extends GraphicsProgram {
 	
 /** Starting Y velocity*/
 	private static final int Y_VEL = 3;
-
+	
+	/** Directions paddle and ball is moving from */
+	private static final int WEST = 1;
+	private static final int EAST = -1;
+	private static final int STILL = 0;
 
 	/** Initializes mouse listeners to get mouse events */
 	public void init() {
@@ -79,7 +83,9 @@ public class Breakout extends GraphicsProgram {
 	public void run() {
 		setup();
 		while (!gameIsOver()) {
-			dropBall();
+			if (ball == null) {
+				newTurn();
+			}
 			moveBall();
 			if (ball != null) {
 				checkForCollision();
@@ -105,21 +111,19 @@ public class Breakout extends GraphicsProgram {
 	
 	/**
 	 * Drops ball on the center of the screen and waits for click
-	 * to start moving it whenever it's new turn (when ball is null).
+	 * to start moving it.
 	 */
-	private void dropBall() {
-		if (ball == null) {
-			ball = createFilledCircle(getWidth() / 2, HEIGHT / 2, BALL_RADIUS);
-			add(ball);
-			vx = rgen.nextDouble(1.0, 3.0);
-			vy = Y_VEL;
-			if (rgen.nextBoolean()) vx = -vx;
-			waitForClick();
-		}
+	private void newTurn() {
+		ball = createFilledCircle(getWidth() / 2, HEIGHT / 2, BALL_RADIUS);
+		add(ball);
+		vx = rgen.nextDouble(1.0, 3.0);
+		vy = Y_VEL;
+		if (rgen.nextBoolean()) vx = -vx;
+		waitForClick();
 	}
 	
 	/** 
-	 * Moves the ball on the screen and checks it on
+	 * Moves the ball on the screen and checks it for
 	 * collision with bounds of the screen.
 	 */
 	private void moveBall() {
@@ -155,11 +159,14 @@ public class Breakout extends GraphicsProgram {
 				hitPaddle();
 			}
 		}
+		// Reset paddle direction to determine
+		// whether it stands still
+		paddleDirection = STILL;
 	}
 	
 	/**
 	 * Adjust ball bouncing depending on which edge of the
-	 * paddle was hit and direction ball was coming.
+	 * paddle was hit and direction the ball was coming.
 	 */
 	private void hitPaddle() {
 		double x = ball.getX();
@@ -169,8 +176,28 @@ public class Breakout extends GraphicsProgram {
 		if (getElementAt(x, y) == null && 
 			getElementAt(x + 2 * BALL_RADIUS, y) == null) {
 			vy = -vy;
+			// assume bounce will move ball an amount above the
+			// floor equal to the amount it would have dropped
+			// below the floor.
+			double diff = ball.getY() - (paddle.getY() - 2 * BALL_RADIUS);
+			ball.move(0, -diff);
+		}
+		// If ball and paddle moves opposite directions
+		// ball also bounces along x-axis.
+		int ballDirection = getBallDirection();
+		println("Paddle direction: " + paddleDirection);
+		if (paddleDirection != STILL && paddleDirection != ballDirection) {
+			vx = -vx;
 		}
 		
+	}
+	
+	/** Gets the direction ball is moving on */
+	private int getBallDirection() {
+		if (vx > 0) {
+			return WEST;
+		}
+		return EAST;
 	}
 	
 	/**
@@ -282,7 +309,11 @@ public class Breakout extends GraphicsProgram {
 	public void mouseMoved(MouseEvent e) {
 		if (lastX > PADDLE_WIDTH / 2 &&
 			lastX < getWidth() - PADDLE_WIDTH / 2) {
+			double dx = lastX - (paddle.getX() + PADDLE_WIDTH / 2);
+			paddleDirection = (int)(dx / Math.abs(dx));
 			paddle.setLocation(lastX - PADDLE_WIDTH / 2, paddle.getY());
+		} else {
+			paddleDirection = STILL;
 		}
 		lastX = e.getX();
 	}
@@ -315,4 +346,5 @@ public class Breakout extends GraphicsProgram {
 	int lastX = 0;				// Last horizontal position of mouse
 	int turn = 0;				// Current turn user playing
 	int nBricksRemaining = 0;	// Number of bricks remaining
+	int paddleDirection = STILL;// Direction which is paddle moving or stands still
 }
