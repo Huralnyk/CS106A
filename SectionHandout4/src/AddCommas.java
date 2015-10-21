@@ -29,8 +29,10 @@ public class AddCommas extends ConsoleProgram {
 		
 		String result = "";
 		for (int i = 0; i < str.length(); i++) {
+			int rank = str.length() - i;
+			if (i != 0 && rank % 3 == 0) result += ",";
 			char ch = str.charAt(i);
-			result = result + ch;
+			result += ch;
 		}
 		return result;
 	}
