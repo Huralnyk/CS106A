@@ -19,6 +19,6 @@ public class StringProcessorTest extends ConsoleProgram {
 		
 		// Test altCaps method
 		println(StringProcessor.altCaps("hello"));
-		println(StringProcessor.altCaps("SECTIOS IS AWESOME"));
+		println(StringProcessor.altCaps("SECTION IS AWESOME"));
 	}
 }

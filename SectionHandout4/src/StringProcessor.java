@@ -30,9 +30,11 @@ public class StringProcessor {
 	 */
 	public static String altCaps(String str) {
 		String result = "";
+		int counter = 0;
 		for (int i = 0; i < str.length(); i++) {
 			char ch = str.charAt(i);
-			if (i % 2 != 0) {
+			if (Character.isLetter(ch)) counter++;
+			if (counter % 2 != 0) {
 				result += Character.toUpperCase(ch);
 			} else {
 				result += Character.toLowerCase(ch);
