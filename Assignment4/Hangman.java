@@ -54,12 +54,12 @@ public class Hangman extends ConsoleProgram {
     }
     
     /**
-     * Replace all characters in specified string to symbol "—".
+     * Replace all characters in specified string to symbol "-".
      */
     private String dashify(String str) {
     	String result = "";
     	for (int i = 0; i < str.length(); i++) {
-    		result += "—";
+    		result += "-";
     	}
     	return result;
     }
@@ -116,7 +116,7 @@ public class Hangman extends ConsoleProgram {
      * (2) User guessed all the letters in the word and he win.
      */
     private boolean gameIsOver() {
-    	return guesses == 0 || currentWord.indexOf('—') == -1;
+    	return guesses == 0 || currentWord.indexOf('-') == -1;
     }
     
     /** Private instance variables */

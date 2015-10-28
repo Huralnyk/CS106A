@@ -6,7 +6,6 @@
 
 import acm.program.*;
 import acm.graphics.*;
-import java.awt.*;
 import java.awt.event.*;
 
 /*
