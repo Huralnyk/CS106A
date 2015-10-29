@@ -21,6 +21,9 @@ public class Histogram extends ConsoleProgram {
 		printHistogram(histogram);
 	}
 	
+	/**
+	 * Fills the array of histogram data collected from the file.
+	 */
 	private void fillHistogram(int[] histogram) {
 		try {
 			BufferedReader rd = new BufferedReader(new FileReader(FILENAME));
@@ -37,6 +40,9 @@ public class Histogram extends ConsoleProgram {
 		}
 	}
 	
+	/**
+	 * Prints a histogram of numbers divided into ranges.
+	 */
 	private void printHistogram(int[] histogram) {
 		for (int i = 0; i < histogram.length; i++) {
 			if (i == 10) {
@@ -48,6 +54,12 @@ public class Histogram extends ConsoleProgram {
 		}
 	}
 	
+	/**
+	 * Creates string from specified character repeated n times.
+	 * @param ch Character to repeat in the resulting string
+	 * @param n	 Times to repeat the character in the resulting string
+	 * @return	 New string with character repeated n times
+	 */
 	private String repeatCharacter(char ch, int n) {
 		String result = "";
 		for (int i = 0; i < n; i++) {
