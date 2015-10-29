@@ -6,16 +6,20 @@
  * Assignment #4 (Stanford's CS106A course).
  */
 
-import acm.graphics.*;
 import acm.program.*;
 import acm.util.*;
-
-import java.awt.*;
 
 public class Hangman extends ConsoleProgram {
 	
 	/** Private constants */
 	private static final int N_GUESSES = 8;
+	
+	public void init() {
+		rgen = RandomGenerator.getInstance();
+		lexicon = new HangmanLexicon();
+		canvas = new HangmanCanvas();
+		add(canvas);
+	}
 
     public void run() {
     	setupGame();
@@ -28,11 +32,13 @@ public class Hangman extends ConsoleProgram {
     	secret = lexicon.getWord(index);
     	currentWord = dashify(secret);
     	guesses = N_GUESSES;
+    	canvas.reset();
     }
     
     private void playGame() {
     	println("Welcome to Hangman");
     	while (!gameIsOver()) {
+    		canvas.displayWord(currentWord);
     		println("The word now looks like this: " + currentWord);
     		print("You have ");
     		print(guesses > 1 ? guesses : "only one");
@@ -40,6 +46,7 @@ public class Hangman extends ConsoleProgram {
     		char ch = makeGuess();
     		checkGuessForCorrectness(ch);
     	}
+    	canvas.displayWord(currentWord);
     }
     
     private void endGame() {
@@ -84,6 +91,7 @@ public class Hangman extends ConsoleProgram {
     	} else {
     		println("There're no " + ch + "'s in the word.");
     		guesses--;
+    		canvas.noteIncorrectGuess(ch);
     	}
     }
     
@@ -120,8 +128,9 @@ public class Hangman extends ConsoleProgram {
     }
     
     /** Private instance variables */
-    private RandomGenerator rgen = RandomGenerator.getInstance();
-    private HangmanLexicon lexicon = new HangmanLexicon();
+    private RandomGenerator rgen;
+    private HangmanLexicon lexicon;
+    private HangmanCanvas canvas;
     
     private String secret;
     private String currentWord;
