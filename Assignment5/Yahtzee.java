@@ -14,12 +14,14 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		new Yahtzee().start(args);
 	}
 	
+	/** Runs the program */
 	public void run() {
 		setup();
 		playGame();
 		endGame();
 	}
 	
+	/** Initializes all instance variables */
 	private void setup() {
 		IODialog dialog = getDialog();
 		nPlayers = dialog.readInt("Enter number of players");
@@ -31,6 +33,10 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		display = new YahtzeeDisplay(getGCanvas(), playerNames);
 	}
 	
+	/** 
+	 * Initializes scorecard for players with initial SENTINEL value,
+	 * but leaves score for TOTAL category equals to 0.
+	 */
 	private void initScorecard() {
 		scorecard = new int[nPlayers][N_CATEGORIES];
 		for (int i = 0; i < nPlayers; i++) {
@@ -41,6 +47,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 	}
 
+	/** Plays the game */
 	private void playGame() {
 		while (!gameIsOver()) {
 			for (int player = 1; player <= nPlayers; player++) {
@@ -50,21 +57,27 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 	}
 	
+	/** 
+	 * Ends the game with calculating total scores for 
+	 * each player and congratulates the winner.
+	 */
 	private void endGame() {
 		updateFinalScores();
 		congratulateWinner();
 	}
 	
+	/** Calculates final scores and updates display */
 	private void updateFinalScores() {
 		for (int player = 1; player <= nPlayers; player++) {
-			int upperScore = upperScore(player);
+			int upperScore = getUpperScore(player);
 			int bonus = upperScore >= 63 ? BONUS_SCORE : 0;
 			display.updateScorecard(UPPER_SCORE, player, upperScore);
 			display.updateScorecard(UPPER_BONUS, player, bonus);
 		}
 	}
 	
-	private int upperScore(int player) {
+	/** Calculates upper score for specified player */
+	private int getUpperScore(int player) {
 		int score = 0;
 		for (int i = 0; i < UPPER_SCORE; i++) {
 			score += scorecard[player - 1][i];
@@ -72,6 +85,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return score;
 	}
 	
+	/** Congratulates the winner */
 	private void congratulateWinner() {
 		String name = "";
 		int score = 0;
@@ -87,6 +101,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		display.printMessage(message);
 	}
 	
+	/** Plays one round for the specified player */
 	private void playRound(int player) {
 		String name = playerNames[player - 1];
 		
@@ -103,7 +118,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 		
 		message = "Select a category for this roll";
-		int category = selectCategoryForPlayer(player);
+		int category = choseeCategoryForPlayer(player);
 		int score = scoreForCategery(category);
 		scorecard[player - 1][TOTAL - 1] += score;
 		scorecard[player - 1][category - 1] = score;
@@ -114,7 +129,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	
 	/**
 	 * Checks whether game is over, which is true when
-	 * (1) All categories have been already scored.
+	 * all categories have been already scored.
 	 */
 	private boolean gameIsOver() {
 		return scoredCategories >= N_SCORING_CATEGORIES;
@@ -131,7 +146,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/**
-	 * Re-rolls unselected dice.
+	 * Re-rolls selected dice.
 	 */
 	private void rerollDice() {
 		for (int i = 0; i < N_DICE; i++) {
@@ -143,8 +158,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	
 	/**
-	 * Returns scores for the specified, if specified
-	 * category is not scored returns 0.
+	 * Calculates score for the specified category.
 	 */
 	private int scoreForCategery(int category) {
 		
@@ -178,7 +192,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	 * Selects the category, if it's not already scored for
 	 * specified player.
 	 */
-	private int selectCategoryForPlayer(int player) {
+	private int choseeCategoryForPlayer(int player) {
 		while (true) {
 			int category = display.waitForPlayerToSelectCategory();
 			if (scorecard[player - 1][category - 1] == -1) return category;
@@ -216,7 +230,68 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	 * Checks whether specified category is scored.
 	 */
 	private boolean checkCategory(int[] dice, int category) {
-		return YahtzeeMagicStub.checkCategory(dice, category);
+		int[] occurrences = getOccurrences(dice);
+		
+		switch (category) {
+			case ONES: case TWOS: case THREES: case FOURS:
+			case FIVES: case SIXES: case CHANCE:
+				return true;
+				
+			case THREE_OF_A_KIND: 
+				for (int i = 0; i < occurrences.length; i++) {
+					if (occurrences[i] >= 3) return true;
+				}
+				
+			case FOUR_OF_A_KIND: 
+				for (int i = 0; i < occurrences.length; i++) {
+					if (occurrences[i] >= 4) return true;
+				}
+				
+			case YAHTZEE:
+				for (int i = 0; i < occurrences.length; i++) {
+					if (occurrences[i] == 5) return true;
+				}
+				
+			case FULL_HOUSE:
+				boolean hasDouble = false;
+				boolean hasTriple = false;
+				for (int i = 0; i < occurrences.length; i++) {
+					if (occurrences[i] == 2) hasDouble = true;
+					if (occurrences[i] == 3) hasTriple = true; 
+				}
+				return hasDouble && hasTriple;
+				
+			case SMALL_STRAIGHT: case LARGE_STRAIGHT:
+				return checkForStraight(occurrences, category);
+				
+			default: return false;
+		}
+	}
+	
+	/** Returns array of occurrences for each value on dice */
+	private int[] getOccurrences(int[] dice) {
+		int[] ocurrences = new int[6];
+		for (int i = 0; i < dice.length; i++) {
+			int index = dice[i] - 1;
+			ocurrences[index] += 1; 
+		}
+		return ocurrences;
+	}
+	
+	/** Checks whether given category scored for a straight */
+	private boolean checkForStraight(int[] occurrences, int category) {
+		int straightLength = category == SMALL_STRAIGHT ? 4 : 5;
+		for (int i = 0; i < occurrences.length; i++) {
+			int n = occurrences[i];
+			if (n != 0 && i <= occurrences.length - straightLength) {
+				boolean inStraight = true;
+				for (int j = 0; j < straightLength; j++) {
+					if (occurrences[i + j] == 0) inStraight = false;
+				}
+				if (inStraight) return true;
+			}
+		}
+		return false;
 	}
 		
 	/* Private instance variables */

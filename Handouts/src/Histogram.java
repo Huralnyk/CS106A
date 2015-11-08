@@ -42,6 +42,7 @@ public class Histogram extends ConsoleProgram {
 					histogramArray[range]++;
 				}
 			}
+			rd.close();
 		} catch (IOException ex) {
 			throw new ErrorException(ex);
 		}
