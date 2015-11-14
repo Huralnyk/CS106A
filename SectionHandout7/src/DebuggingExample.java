@@ -36,7 +36,6 @@ public class DebuggingExample extends GraphicsProgram  {
 
 	public void run() {
 		
-
 		dx = rgen.nextDouble(MIN_DX, MAX_DX); 
 		dy = rgen.nextDouble(MIN_DY, MAX_DY);
 
@@ -54,12 +53,10 @@ public class DebuggingExample extends GraphicsProgram  {
 
 	private void SetupLabel() {
 		text = new GLabel("Bouncing  Bouncing  Ball!");
-
+		text.setFont(new Font("Arial", Font.BOLD, 32));
 		double x = (getWidth() / 2.0) - (text.getWidth() / 2.0);       
 		double y = getHeight() - TEXT_HEIGHT;    
-		text.setLocation(x,y);
-
-		text.setFont(new Font("Arial", Font.BOLD, 32));    
+		text.setLocation(x,y);    
 		text.setColor(Color.RED);
 		add(text);
 	}
