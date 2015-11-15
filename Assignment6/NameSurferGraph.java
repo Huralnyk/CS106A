@@ -20,7 +20,7 @@ public class NameSurferGraph extends GCanvas
 	*/
 	public NameSurferGraph() {
 		addComponentListener(this);
-		// You fill in the rest //
+		entries = new ArrayList<NameSurferEntry>();
 	}
 	
 	
@@ -28,7 +28,8 @@ public class NameSurferGraph extends GCanvas
 	* Clears the list of name surfer entries stored inside this class.
 	*/
 	public void clear() {
-		// You fill this in //
+		entries.clear();
+		update();
 	}
 	
 	
@@ -39,7 +40,10 @@ public class NameSurferGraph extends GCanvas
 	* simply stores the entry; the graph is drawn by calling update.
 	*/
 	public void addEntry(NameSurferEntry entry) {
-		// You fill this in //
+		if (entries.indexOf(entry) != -1) {
+			entries.add(entry);
+			update();
+		}
 	}
 	
 	
@@ -51,13 +55,32 @@ public class NameSurferGraph extends GCanvas
 	* the size of the canvas changes.
 	*/
 	public void update() {
-		// You fill this in //
+		removeAll();
+		drawGrid();
 	}
 	
+	/**
+	 * Draws the background grid for the graph.
+	 */
+	private void drawGrid() {
+		double columnWidth = getWidth() / NDECADES;
+		for (int i = 0; i < NDECADES; i++) {
+			double x = i * columnWidth;
+			add(new GLine(x, 0, x, getHeight()));
+			String decade = " " + (START_DECADE + i * 10);
+			GLabel label = new GLabel(decade);
+			add(label, x, getHeight() - label.getDescent());
+		}
+		add (new GLine(0, GRAPH_MARGIN_SIZE, getWidth(), GRAPH_MARGIN_SIZE));
+		add (new GLine(0, getHeight() - GRAPH_MARGIN_SIZE, getWidth(), getHeight() - GRAPH_MARGIN_SIZE));
+	}
 	
 	/* Implementation of the ComponentListener interface */
 	public void componentHidden(ComponentEvent e) { }
 	public void componentMoved(ComponentEvent e) { }
 	public void componentResized(ComponentEvent e) { update(); }
 	public void componentShown(ComponentEvent e) { }
+	
+	/* Private instance variables */
+	private ArrayList<NameSurferEntry> entries;
 }

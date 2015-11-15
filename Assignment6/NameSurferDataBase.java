@@ -11,6 +11,7 @@
 
 import acm.util.*;
 import java.util.*;
+import java.io.*;
 
 public class NameSurferDataBase implements NameSurferConstants {
 	
@@ -22,7 +23,18 @@ public class NameSurferDataBase implements NameSurferConstants {
  * occurs as the file is being read.
  */
 	public NameSurferDataBase(String filename) {
-		// You fill this in //
+		try {
+			BufferedReader rd = new BufferedReader(new FileReader(filename));
+			while (true) {
+				String line = rd.readLine();
+				if (line == null) break;
+				NameSurferEntry entry = new NameSurferEntry(line);
+				list.put(entry.getName(), entry);
+			}
+			rd.close();
+		} catch (IOException ex) {
+			throw new ErrorException(ex);
+		}
 	}
 	
 /* Method: findEntry(name) */
@@ -32,8 +44,10 @@ public class NameSurferDataBase implements NameSurferConstants {
  * method returns null.
  */
 	public NameSurferEntry findEntry(String name) {
-		// You need to turn this stub into a real implementation //
-		return null;
+		return list.get(name);
 	}
+	
+	/* Private instance variables */
+	private Map<String, NameSurferEntry> list = new HashMap<String, NameSurferEntry>();
 }
 
