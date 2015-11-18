@@ -8,13 +8,13 @@
 
 import java.util.*;
 
-public class Album2 {
+public class Album {
 	
 	/** Constructor
 	 *  Note that the album name and year are immutable
 	 *  once the album is created.
 	 */
-	public Album2(String albumName, int year) {
+	public Album(String albumName, int year) {
 		title = albumName;
 		releaseYear = year;
 	}

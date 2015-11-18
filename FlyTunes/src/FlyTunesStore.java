@@ -125,7 +125,7 @@ public class FlyTunesStore extends ConsoleProgram {
 			println("That album is already in the store.");
 		} else {
 			int year = readInt("Release year: ");
-			Album2 album = new Album2(name, year);
+			Album album = new Album(name, year);
 			albums.put(name, album);
 			while (true) {
 				Song song = addSong();
@@ -179,7 +179,7 @@ public class FlyTunesStore extends ConsoleProgram {
 		
 	/* Private instance variables */
 	// Inventory all the albums carried by the store
-	private Map<String,Album2> albums = new HashMap<String,Album2>();
+	private Map<String,Album> albums = new HashMap<String,Album>();
 	// Inventory of all the songs carried by the store
 	private ArrayList<Song> songs = new ArrayList<Song>();
 
