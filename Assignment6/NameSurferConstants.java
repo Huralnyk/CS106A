@@ -28,5 +28,8 @@ public interface NameSurferConstants {
 
 /** The number of pixels to reserve at the top and bottom */
 	public static final int GRAPH_MARGIN_SIZE = 20;
+	
+/** The number of pixels to offset between point on graph and label */
+	public static final double LABEL_OFFSET = 2;
 
 }

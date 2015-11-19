@@ -40,7 +40,7 @@ public class NameSurferGraph extends GCanvas
 	* simply stores the entry; the graph is drawn by calling update.
 	*/
 	public void addEntry(NameSurferEntry entry) {
-		if (entries.indexOf(entry) != -1) {
+		if (entries.indexOf(entry) == -1) {
 			entries.add(entry);
 			update();
 		}
@@ -57,6 +57,9 @@ public class NameSurferGraph extends GCanvas
 	public void update() {
 		removeAll();
 		drawGrid();
+		for (int i = 0; i < entries.size(); i++) {
+			drawGraphWithEntry(entries.get(i), getColorForGraph(i));
+		}
 	}
 	
 	/**
@@ -73,6 +76,69 @@ public class NameSurferGraph extends GCanvas
 		}
 		add (new GLine(0, GRAPH_MARGIN_SIZE, getWidth(), GRAPH_MARGIN_SIZE));
 		add (new GLine(0, getHeight() - GRAPH_MARGIN_SIZE, getWidth(), getHeight() - GRAPH_MARGIN_SIZE));
+	}
+	
+	/**
+	 * Draws graph for NameSurferEntry with specified color.
+	 */
+	private void drawGraphWithEntry(NameSurferEntry entry, Color c) {
+		double y = rankOnPlot(entry.getRank(0));
+		GPoint startPoint = new GPoint(0, y);
+		GLabel info = getInfoLabel(entry.getName(), entry.getRank(0));
+		info.setLocation(LABEL_OFFSET, y - LABEL_OFFSET);
+		info.setColor(c);
+		add(info);
+		
+		for (int i = 1; i < NDECADES; i++) {
+			double x = i * (getWidth() / NDECADES);
+			y = rankOnPlot(entry.getRank(i));
+			
+			GLine line = new GLine(startPoint.getX(), startPoint.getY(), x, y);
+			line.setColor(c);
+			add(line);
+			
+			info = getInfoLabel(entry.getName(), entry.getRank(i));
+			info.setLocation(x + LABEL_OFFSET, y - LABEL_OFFSET);
+			info.setColor(c);
+			add(info);
+			
+			startPoint.setLocation(x, y);
+		}
+	}
+	
+	/**
+	 * Converts rank to its y-coordinate on the graph.
+	 */
+	private double rankOnPlot(int rank) {
+		if (rank == 0) {
+			return getHeight() - GRAPH_MARGIN_SIZE;
+		} else {
+			double graphHeight = getHeight() - 2 * GRAPH_MARGIN_SIZE;
+			double scale = graphHeight / MAX_RANK;
+			return GRAPH_MARGIN_SIZE + rank * scale;
+		}
+	}
+	
+	/**
+	 * Constructs info label for plot.
+	 */
+	private GLabel getInfoLabel(String name, int rank) {
+		String str = rank == 0 ? "*" : "" + rank;
+		GLabel info = new GLabel(name + " " + str);
+		info.setFont("Arial-12");
+		return info;
+	}
+	
+	/**
+	 * Returns the color Nth plot on the graph.
+	 */
+	private Color getColorForGraph(int n) {
+		switch (n % 4) {
+			case 1: return Color.RED;
+			case 2: return Color.BLUE;
+			case 3: return Color.MAGENTA;
+		}
+		return Color.BLACK;
 	}
 	
 	/* Implementation of the ComponentListener interface */

@@ -44,7 +44,7 @@ public class NameSurfer extends Program implements NameSurferConstants {
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if (cmd.equals("Graph")) {
-			NameSurferEntry entry = database.findEntry(namefield.getText());
+			NameSurferEntry entry = database.findEntry(uppercaseFirstLetter(namefield.getText()));
 			if (entry != null) {
 				graph.addEntry(entry);
 			}
@@ -53,6 +53,9 @@ public class NameSurfer extends Program implements NameSurferConstants {
 		}
 	}
 	
+	private String uppercaseFirstLetter(String str) {
+		return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+	}
 	/* Private instance variables */
 	private JTextField namefield;
 	private NameSurferDataBase database;
