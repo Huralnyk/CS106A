@@ -59,7 +59,18 @@ public class FacePamphlet extends ConsoleProgram
     public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if (cmd.equals("Add") && !namefield.getText().isEmpty()) {
-			println(cmd + ": " + namefield.getText());
+			FacePamphletProfile prof = new FacePamphletProfile(namefield.getText());
+			if (prof.addFriend("Peter")) { println("True"); }
+			else { println("False"); }
+			if (prof.addFriend("Jemma")) { println("True"); }
+			else { println("False"); }
+			if (prof.addFriend("Peter")) { println("True"); }
+			else { println("False"); }
+			if (prof.removeFriend("Peter")) { println("True"); }
+			else { println("False"); }
+			if (prof.removeFriend("Peter")) { println("True"); }
+			else { println("False"); }
+			println(prof);
 		} else if (cmd.equals("Delete") && !namefield.getText().isEmpty()) {
 			println(cmd + ": " + namefield.getText());
 		} else if (cmd.equals("Lookup") && !namefield.getText().isEmpty()) {
