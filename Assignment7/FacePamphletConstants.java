@@ -9,7 +9,7 @@
 public interface FacePamphletConstants {
 
 	/** The width of the application window */
-	public static final int APPLICATION_WIDTH = 800;
+	public static final int APPLICATION_WIDTH = 900;
 
 	/** The height of the application window */
 	public static final int APPLICATION_HEIGHT = 500;
