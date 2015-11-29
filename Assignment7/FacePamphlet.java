@@ -21,14 +21,10 @@ public class FacePamphlet extends ConsoleProgram
 	 * initialization that needs to be performed.
 	 */
 	public void init() {
-		namefield = new JTextField(TEXT_FIELD_SIZE);
-		statusfield = new JTextField(TEXT_FIELD_SIZE);
 		statusfield.setActionCommand(STATUS_COMMAND);
 		statusfield.addActionListener(this);
-		picturefield = new JTextField(TEXT_FIELD_SIZE);
 		picturefield.setActionCommand(PICTURE_COMMAND);
 		picturefield.addActionListener(this);
-		friendfield = new JTextField(TEXT_FIELD_SIZE);
 		friendfield.setActionCommand(FRIEND_COMMAND);
 		friendfield.addActionListener(this);
 		
@@ -76,16 +72,22 @@ public class FacePamphlet extends ConsoleProgram
 		}
 	}
     
+    /**
+     * Adds new profile to database if it doesn't already exist.
+     */
     private void addProfile(String name) {
     	if (database.containsProfile(name)) {
     		println("Add: profile for " + name + " already exists: " + database.getProfile(name));
     	} else {
     		FacePamphletProfile profile = new FacePamphletProfile(name);
     		database.addProfile(profile);
-    		println("Add: profile: " + profile);
+    		println("Add: new profile: " + profile);
     	}
     }
     
+    /**
+     * Removes profile from database if it exists.
+     */
     private void removeProfile(String name) {
     	if (database.containsProfile(name)) {
     		database.deleteProfile(name);
@@ -95,6 +97,9 @@ public class FacePamphlet extends ConsoleProgram
     	}
     }
     
+    /**
+     * Looks up for the profile in database.
+     */
     private void lookupProfile(String name) {
     	if (database.containsProfile(name)) {
     		FacePamphletProfile profile = database.getProfile(name);
@@ -110,10 +115,10 @@ public class FacePamphlet extends ConsoleProgram
     private static final String FRIEND_COMMAND = "Add Friend";
     
     /* Private instance variables */
-    private JTextField namefield;
-    private JTextField statusfield;
-    private JTextField picturefield;
-    private JTextField friendfield;
+    private JTextField namefield = new JTextField(TEXT_FIELD_SIZE);
+    private JTextField statusfield = new JTextField(TEXT_FIELD_SIZE);
+    private JTextField picturefield = new JTextField(TEXT_FIELD_SIZE);
+    private JTextField friendfield = new JTextField(TEXT_FIELD_SIZE);
     private FacePamphletDatabase database = new FacePamphletDatabase();
 
 }
