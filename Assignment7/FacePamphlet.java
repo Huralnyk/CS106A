@@ -59,22 +59,11 @@ public class FacePamphlet extends ConsoleProgram
     public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if (cmd.equals("Add") && !namefield.getText().isEmpty()) {
-			FacePamphletProfile prof = new FacePamphletProfile(namefield.getText());
-			if (prof.addFriend("Peter")) { println("True"); }
-			else { println("False"); }
-			if (prof.addFriend("Jemma")) { println("True"); }
-			else { println("False"); }
-			if (prof.addFriend("Peter")) { println("True"); }
-			else { println("False"); }
-			if (prof.removeFriend("Peter")) { println("True"); }
-			else { println("False"); }
-			if (prof.removeFriend("Peter")) { println("True"); }
-			else { println("False"); }
-			println(prof);
+			addProfile(namefield.getText());
 		} else if (cmd.equals("Delete") && !namefield.getText().isEmpty()) {
-			println(cmd + ": " + namefield.getText());
+			removeProfile(namefield.getText());
 		} else if (cmd.equals("Lookup") && !namefield.getText().isEmpty()) {
-			println(cmd + ": " + namefield.getText());
+			lookupProfile(namefield.getText());
 		} else if (cmd.equals(STATUS_COMMAND) && !statusfield.getText().isEmpty()) {
 			println(cmd + ": " + statusfield.getText());
 			statusfield.setText("");
@@ -87,6 +76,34 @@ public class FacePamphlet extends ConsoleProgram
 		}
 	}
     
+    private void addProfile(String name) {
+    	if (database.containsProfile(name)) {
+    		println("Add: profile for " + name + " already exists: " + database.getProfile(name));
+    	} else {
+    		FacePamphletProfile profile = new FacePamphletProfile(name);
+    		database.addProfile(profile);
+    		println("Add: profile: " + profile);
+    	}
+    }
+    
+    private void removeProfile(String name) {
+    	if (database.containsProfile(name)) {
+    		database.deleteProfile(name);
+    		println("Delete: profile of " + name + " deleted");
+    	} else {
+    		println("Delete: profile with name " + name + " does not exist");
+    	}
+    }
+    
+    private void lookupProfile(String name) {
+    	if (database.containsProfile(name)) {
+    		FacePamphletProfile profile = database.getProfile(name);
+    		println("Lookup: " + profile);
+    	} else {
+    		println("Lookup: profile with name " + name + " does not exist");
+    	}
+    }
+    
     /* Private constants */
     private static final String STATUS_COMMAND = "Change Status";
     private static final String PICTURE_COMMAND = "Change Picture";
@@ -97,5 +114,6 @@ public class FacePamphlet extends ConsoleProgram
     private JTextField statusfield;
     private JTextField picturefield;
     private JTextField friendfield;
+    private FacePamphletDatabase database = new FacePamphletDatabase();
 
 }
