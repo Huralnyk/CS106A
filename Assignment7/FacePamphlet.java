@@ -61,14 +61,17 @@ public class FacePamphlet extends ConsoleProgram
 		} else if (cmd.equals("Lookup") && !namefield.getText().isEmpty()) {
 			lookupProfile(namefield.getText());
 		} else if (cmd.equals(STATUS_COMMAND) && !statusfield.getText().isEmpty()) {
-			println(cmd + ": " + statusfield.getText());
-			statusfield.setText("");
+			changeStatus(statusfield.getText());
 		} else if (cmd.equals(PICTURE_COMMAND) && !picturefield.getText().isEmpty()) {
-			println(cmd + ": " + picturefield.getText());
-			picturefield.setText("");
+			changePicture(picturefield.getText());
 		} else if (cmd.equals(FRIEND_COMMAND) && !friendfield.getText().isEmpty()) {
-			println(cmd + ": " + friendfield.getText());
-			friendfield.setText("");
+			addFriend(friendfield.getText());
+		}
+		// Debug
+		if (currentProfile != null) {
+			println("--> Current profile: " + currentProfile);
+		} else {
+			println("--> No current profile");
 		}
 	}
     
@@ -77,11 +80,12 @@ public class FacePamphlet extends ConsoleProgram
      */
     private void addProfile(String name) {
     	if (database.containsProfile(name)) {
+    		currentProfile = database.getProfile(name);
     		println("Add: profile for " + name + " already exists: " + database.getProfile(name));
     	} else {
-    		FacePamphletProfile profile = new FacePamphletProfile(name);
-    		database.addProfile(profile);
-    		println("Add: new profile: " + profile);
+    		currentProfile = new FacePamphletProfile(name);
+    		database.addProfile(currentProfile);
+    		println("Add: new profile: " + currentProfile);
     	}
     }
     
@@ -89,6 +93,7 @@ public class FacePamphlet extends ConsoleProgram
      * Removes profile from database if it exists.
      */
     private void removeProfile(String name) {
+    	currentProfile = null;
     	if (database.containsProfile(name)) {
     		database.deleteProfile(name);
     		println("Delete: profile of " + name + " deleted");
@@ -102,11 +107,57 @@ public class FacePamphlet extends ConsoleProgram
      */
     private void lookupProfile(String name) {
     	if (database.containsProfile(name)) {
-    		FacePamphletProfile profile = database.getProfile(name);
-    		println("Lookup: " + profile);
+    		currentProfile = database.getProfile(name);
+    		println("Lookup: " + currentProfile);
     	} else {
+    		currentProfile = null;
     		println("Lookup: profile with name " + name + " does not exist");
     	}
+    }
+    
+    private void changeStatus(String status) {
+    	if (currentProfile == null) {
+    		println("Please select a profile to change status");
+    	} else {
+    		currentProfile.setStatus(status);
+    		println("Status updated to " + status);
+    	}
+    	statusfield.setText("");
+    }
+    
+    private void changePicture(String filename) {
+    	if (currentProfile == null) {
+    		println("Please select a profile to change picture");
+    	} else {
+    		GImage image = null;
+    		try {
+    			image = new GImage(filename);
+    			currentProfile.setImage(image);
+    			println("Picture updated");
+    		} catch (ErrorException ex) {
+    			println("Unable to open image file: " + filename);
+    		}
+    	}
+    	picturefield.setText("");
+    }
+    
+    private void addFriend(String friendname) {
+    	if (currentProfile == null) {
+    		println("Please select a profile to add friend");
+    	} else {
+    		FacePamphletProfile friend = database.getProfile(friendname);
+    		if (friend == null) {
+    			println(friendname + " does not exist");
+    		} else {
+    			if (currentProfile.addFriend(friendname)) {
+    				friend.addFriend(currentProfile.getName());
+    				println(friendname + " added as a friend");
+    			} else {
+    				println(currentProfile.getName() + " already has " + friend + " as a friend");
+    			}
+    		}
+    	}
+    	friendfield.setText("");
     }
     
     /* Private constants */
@@ -120,5 +171,6 @@ public class FacePamphlet extends ConsoleProgram
     private JTextField picturefield = new JTextField(TEXT_FIELD_SIZE);
     private JTextField friendfield = new JTextField(TEXT_FIELD_SIZE);
     private FacePamphletDatabase database = new FacePamphletDatabase();
+    private FacePamphletProfile currentProfile;
 
 }
