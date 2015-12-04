@@ -42,6 +42,20 @@ public class FacePamphletProfile implements FacePamphletConstants {
 	}
 	
 	/** 
+	 * This method returns the name of the image associated with the profile.  
+	 * If there is no image associated with the profile, the method
+	 * returns empty string. */ 
+	public String getImageName() {
+		if (picturename == null) return "";
+		return picturename;
+	}
+	
+	/** This method sets the image name associated with the profile. */ 
+	public void setImageName(String filename) {
+		this.picturename = filename;
+	}
+	
+	/** 
 	 * This method returns the status associated with the profile.
 	 * If there is no status associated with the profile, the method
 	 * returns the empty string ("").
@@ -119,6 +133,7 @@ public class FacePamphletProfile implements FacePamphletConstants {
 	/* Private instance variables */
 	private String name;
 	private String status;
+	private String picturename;
 	private GImage picture;
 	private HashSet<String> friendlist;
 }
