@@ -11,8 +11,9 @@ import acm.graphics.*;
 import acm.util.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.io.*;
 
-public class FacePamphlet extends ConsoleProgram 
+public class FacePamphlet extends Program 
 					implements FacePamphletConstants {
 
 	/**
@@ -21,6 +22,9 @@ public class FacePamphlet extends ConsoleProgram
 	 * initialization that needs to be performed.
 	 */
 	public void init() {
+		canvas = new FacePamphletCanvas();
+		add(canvas);
+		
 		statusfield.setActionCommand(STATUS_COMMAND);
 		statusfield.addActionListener(this);
 		picturefield.setActionCommand(PICTURE_COMMAND);
@@ -33,6 +37,10 @@ public class FacePamphlet extends ConsoleProgram
 		add(new JButton("Add"), NORTH);
 		add(new JButton("Delete"), NORTH);
 		add(new JButton("Lookup"), NORTH);
+		add(new JLabel("File"), NORTH);
+		add(filenamefield, NORTH);
+		add(new JButton("Load"), NORTH);
+		add(new JButton("Save"), NORTH);
 		
 		add(statusfield, WEST);
 		add(new JButton(STATUS_COMMAND), WEST);
@@ -66,12 +74,10 @@ public class FacePamphlet extends ConsoleProgram
 			changePicture(picturefield.getText());
 		} else if (cmd.equals(FRIEND_COMMAND) && !friendfield.getText().isEmpty()) {
 			addFriend(friendfield.getText());
-		}
-		// Debug
-		if (currentProfile != null) {
-			println("--> Current profile: " + currentProfile);
-		} else {
-			println("--> No current profile");
+		} else if (cmd.equals("Load") && !filenamefield.getText().isEmpty()) {
+			loadFile(filenamefield.getText());
+		} else if (cmd.equals("Save") && !filenamefield.getText().isEmpty()) {
+			saveFile(filenamefield.getText());
 		}
 	}
     
@@ -81,11 +87,13 @@ public class FacePamphlet extends ConsoleProgram
     private void addProfile(String name) {
     	if (database.containsProfile(name)) {
     		currentProfile = database.getProfile(name);
-    		println("Add: profile for " + name + " already exists: " + database.getProfile(name));
+    		canvas.displayProfile(currentProfile);
+    		canvas.showMessage("A profile with the name " + name + " already exists");
     	} else {
     		currentProfile = new FacePamphletProfile(name);
     		database.addProfile(currentProfile);
-    		println("Add: new profile: " + currentProfile);
+    		canvas.displayProfile(currentProfile);
+    		canvas.showMessage("New profile created");
     	}
     }
     
@@ -96,9 +104,11 @@ public class FacePamphlet extends ConsoleProgram
     	currentProfile = null;
     	if (database.containsProfile(name)) {
     		database.deleteProfile(name);
-    		println("Delete: profile of " + name + " deleted");
+    		canvas.displayProfile(currentProfile);
+    		canvas.showMessage("Profile of " + name + " deleted");
     	} else {
-    		println("Delete: profile with name " + name + " does not exist");
+    		canvas.displayProfile(currentProfile);
+    		canvas.showMessage("A profile with the name " + name + " does not exist");
     	}
     }
     
@@ -108,56 +118,94 @@ public class FacePamphlet extends ConsoleProgram
     private void lookupProfile(String name) {
     	if (database.containsProfile(name)) {
     		currentProfile = database.getProfile(name);
-    		println("Lookup: " + currentProfile);
+    		canvas.displayProfile(currentProfile);
+    		canvas.showMessage("Displaying " + name);
     	} else {
     		currentProfile = null;
-    		println("Lookup: profile with name " + name + " does not exist");
+    		canvas.displayProfile(currentProfile);
+    		canvas.showMessage("A profile with the name " + name + " does not exist");
     	}
     }
     
+    /**
+     * Changes status for current profile.
+     */
     private void changeStatus(String status) {
     	if (currentProfile == null) {
-    		println("Please select a profile to change status");
+    		canvas.showMessage("Please select a profile to change status");
     	} else {
     		currentProfile.setStatus(status);
-    		println("Status updated to " + status);
+    		canvas.displayProfile(currentProfile);
+    		canvas.showMessage("Status updated to " + status);
     	}
     	statusfield.setText("");
     }
     
+    /**
+     * Changes picture for current profile.
+     */
     private void changePicture(String filename) {
     	if (currentProfile == null) {
-    		println("Please select a profile to change picture");
+    		canvas.showMessage("Please select a profile to change picture");
     	} else {
     		GImage image = null;
     		try {
     			image = new GImage(filename);
+    			currentProfile.setImageName(filename);
     			currentProfile.setImage(image);
-    			println("Picture updated");
+    			canvas.displayProfile(currentProfile);
+    			canvas.showMessage("Picture updated");
     		} catch (ErrorException ex) {
-    			println("Unable to open image file: " + filename);
+    			canvas.showMessage("Unable to open image file: " + filename);
     		}
     	}
     	picturefield.setText("");
     }
     
+    /**
+     * Adds new friend to current profile.
+     */
     private void addFriend(String friendname) {
     	if (currentProfile == null) {
-    		println("Please select a profile to add friend");
+    		canvas.showMessage("Please select a profile to add friend");
     	} else {
     		FacePamphletProfile friend = database.getProfile(friendname);
     		if (friend == null) {
-    			println(friendname + " does not exist");
+    			canvas.showMessage(friendname + " does not exist");
+    		} else if (currentProfile.getName().equals(friendname)) {
+    			canvas.showMessage("You can't add yourself as a friend");
     		} else {
     			if (currentProfile.addFriend(friendname)) {
     				friend.addFriend(currentProfile.getName());
-    				println(friendname + " added as a friend");
+    				canvas.displayProfile(currentProfile);
+    				canvas.showMessage(friendname + " added as a friend");
     			} else {
-    				println(currentProfile.getName() + " already has " + friend + " as a friend");
+    				canvas.showMessage(currentProfile.getName() + " already has " + friend + " as a friend");
     			}
     		}
     	}
     	friendfield.setText("");
+    }
+    
+    private void loadFile(String filename) {
+    	try {
+    		BufferedReader rd = new BufferedReader(new FileReader(filename));
+    		currentProfile = null;
+    		canvas.displayProfile(currentProfile);
+    		database.loadDatabaseFromFile(rd);
+    		canvas.showMessage("Loaded file " + filename);
+    		rd.close();
+    	} catch (IOException ex) {
+    		canvas.showMessage("Unable to open file " + filename);
+    	}
+    }
+    
+    private void saveFile(String filename) {
+    	if (database.saveDatabaseToFile(filename)) {
+    		canvas.showMessage("Saved file " + filename);
+    	} else {
+    		canvas.showMessage("Can't save file " + filename);
+    	}
     }
     
     /* Private constants */
@@ -170,7 +218,9 @@ public class FacePamphlet extends ConsoleProgram
     private JTextField statusfield = new JTextField(TEXT_FIELD_SIZE);
     private JTextField picturefield = new JTextField(TEXT_FIELD_SIZE);
     private JTextField friendfield = new JTextField(TEXT_FIELD_SIZE);
+    private JTextField filenamefield = new JTextField(TEXT_FIELD_SIZE);
     private FacePamphletDatabase database = new FacePamphletDatabase();
     private FacePamphletProfile currentProfile;
+    private FacePamphletCanvas canvas;
 
 }

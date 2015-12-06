@@ -7,6 +7,10 @@
  */
 
 import java.util.*;
+import java.io.*;
+
+import acm.util.*;
+import acm.graphics.*;
 
 public class FacePamphletDatabase implements FacePamphletConstants {
 
@@ -68,7 +72,6 @@ public class FacePamphletDatabase implements FacePamphletConstants {
 			friend.removeFriend(profile.getName());
 		}
 	}
-
 	
 	/** 
 	 * This method returns true if there is a profile in the database 
@@ -76,6 +79,65 @@ public class FacePamphletDatabase implements FacePamphletConstants {
 	 */
 	public boolean containsProfile(String name) {
 		return database.containsKey(name);
+	}
+	
+	public void loadDatabaseFromFile(BufferedReader rd) {
+		// Discard old database
+		database = new HashMap<String, FacePamphletProfile>();
+		try {
+			int numOfProfiles = Integer.parseInt(rd.readLine());
+			for (int i = 0; i < numOfProfiles; i++) {
+				readProfile(rd);
+			}
+		} catch (IOException ex) {
+			throw new ErrorException("Ilegal file format");
+		}
+	}
+	
+	public boolean saveDatabaseToFile(String filename) {
+		try {
+			PrintWriter wr = new PrintWriter(new FileWriter(filename));
+			wr.println(database.size());
+			for (String name : database.keySet()) {
+				FacePamphletProfile profile = database.get(name);
+				saveProfile(profile, wr);
+			}
+			wr.close();
+		} catch (IOException ex) {
+			return false;
+		}
+		return true;
+	}
+	
+	public void readProfile(BufferedReader rd) throws IOException {
+		try {
+			FacePamphletProfile profile = new FacePamphletProfile(rd.readLine());
+    		String filename = rd.readLine();
+    		profile.setImageName(filename);
+    		if (!filename.equals("")) {
+    			profile.setImage(new GImage(filename));
+    		}
+			profile.setStatus(rd.readLine());
+			while (true) {
+				String friend = rd.readLine();
+				if (friend.equals("")) break;
+				profile.addFriend(friend);
+			}
+			addProfile(profile);
+		} catch (IOException ex) {
+			throw ex;
+		}
+	}
+	
+	public void saveProfile(FacePamphletProfile profile, PrintWriter wr) {	
+		wr.println(profile.getName());
+		wr.println(profile.getImageName());
+		wr.println(profile.getStatus());
+		Iterator<String> friends = profile.getFriends();
+		while (friends.hasNext()) {
+			wr.println(friends.next());
+		}
+		wr.println("");
 	}
 	
 	/* Private instance variables */

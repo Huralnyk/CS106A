@@ -1,0 +1,25 @@
+4
+Stan Marsh
+stan-marsh.png
+
+Eric Cartman
+Kyle Broflovski
+Kenny McCormick
+
+Eric Cartman
+eric-cartman.png
+eating
+Stan Marsh
+
+Kyle Broflovski
+kyle-broflovski.png
+hating Cartman
+Stan Marsh
+Kenny McCormick
+
+Kenny McCormick
+kenny-mccormick.png
+suffering
+Stan Marsh
+Kyle Broflovski
+
