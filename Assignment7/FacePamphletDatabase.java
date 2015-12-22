@@ -81,6 +81,9 @@ public class FacePamphletDatabase implements FacePamphletConstants {
 		return database.containsKey(name);
 	}
 	
+	/**
+	 * This method loads database from a specified BufferedReader.
+	 */
 	public void loadDatabaseFromFile(BufferedReader rd) {
 		// Discard old database
 		database = new HashMap<String, FacePamphletProfile>();
@@ -94,6 +97,9 @@ public class FacePamphletDatabase implements FacePamphletConstants {
 		}
 	}
 	
+	/**
+	 * This methods saves database to file with specified filename.
+	 */
 	public boolean saveDatabaseToFile(String filename) {
 		try {
 			PrintWriter wr = new PrintWriter(new FileWriter(filename));
@@ -109,6 +115,10 @@ public class FacePamphletDatabase implements FacePamphletConstants {
 		return true;
 	}
 	
+	/**
+	 * Helper method reads one profile entry from specified BufferedReader
+	 * and saves it to database. May throw exception.
+	 */
 	public void readProfile(BufferedReader rd) throws IOException {
 		try {
 			FacePamphletProfile profile = new FacePamphletProfile(rd.readLine());
@@ -129,6 +139,9 @@ public class FacePamphletDatabase implements FacePamphletConstants {
 		}
 	}
 	
+	/**
+	 * Helper method saves profile to specified PrintWriter.
+	 */
 	public void saveProfile(FacePamphletProfile profile, PrintWriter wr) {	
 		wr.println(profile.getName());
 		wr.println(profile.getImageName());
